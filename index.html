@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Senhas</title>
+  <style>
+    :root {
+      --green: #28a745;
+      --green-dark: #1e7e34;
+      --bg-dark: #1d1f21;
+      --text-light: #ffffff;
+      --card-dark: #2c2f33;
+      --border-dark: #444444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: var(--card-dark);
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--green);
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-dark);
+      background-color: #1a1c1f;
+      color: var(--text-light);
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    .password-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .password-wrapper input {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .copy-btn {
+      background-color: var(--green);
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .copy-btn:hover {
+      background-color: var(--green-dark);
+    }
+
+    .feedback {
+      height: 18px;
+      font-size: 13px;
+      color: var(--green);
+      margin-top: 8px;
+      margin-bottom: 18px;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .generate-btn:hover {
+      background-color: var(--green-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Senhas</h1>
+
+    <label for="length">Quantidade de caracteres</label>
+    <input type="number" id="length" min="4" max="64" value="12" />
+
+    <label for="password">Senha gerada</label>
+    <div class="password-wrapper">
+      <input type="text" id="password" readonly placeholder="Clique em gerar senha" />
+      <button class="copy-btn" onclick="copyPassword()">📋</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <button class="generate-btn" onclick="generatePassword()">Gerar Senha</button>
+  </div>
+
+  <script>
+    function generatePassword() {
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+      const length = parseInt(document.getElementById("length").value);
+      let password = "";
+
+      if (isNaN(length) || length < 4 || length > 64) {
+        alert("Escolha um valor entre 4 e 64.");
+        return;
+      }
+
+      const randomValues = new Uint32Array(length);
+      window.crypto.getRandomValues(randomValues);
+
+      for (let i = 0; i < length; i++) {
+        const index = randomValues[i] % charset.length;
+        password += charset.charAt(index);
+      }
+
+      document.getElementById("password").value = password;
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function copyPassword() {
+      const passwordField = document.getElementById("password");
+      const feedback = document.getElementById("feedback");
+
+      if (passwordField.value === "") {
+        feedback.textContent = "Nada para copiar!";
+        return;
+      }
+
+      navigator.clipboard.writeText(passwordField.value)
+        .then(() => {
+          feedback.textContent = "Senha copiada!";
+          setTimeout(() => feedback.textContent = "", 2000);
+        })
+        .catch(() => {
+          feedback.textContent = "Erro ao copiar.";
+        });
+    }
+  </script>
+</body>
+</html>
